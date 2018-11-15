@@ -29,7 +29,9 @@
 	else if(g_form.getValue('approval') == "approved"){
 		g_form.getControl('approval').style["background-color"]= '#66ff8c';
 	}
-}]]></script>
+}
+
+//testing github change]]></script>
         <sys_class_name>sys_script_client</sys_class_name>
         <sys_created_by>pcastillo</sys_created_by>
         <sys_created_on>2018-09-25 15:31:27</sys_created_on>
@@ -37,7 +39,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>05cd5601db382f00f19c5eea4b9619d9</sys_id>
-        <sys_mod_count>2</sys_mod_count>
+        <sys_mod_count>3</sys_mod_count>
         <sys_name>Onload Hardware Loaner Set Fields</sys_name>
         <sys_overrides/>
         <sys_package display_value="Equipment Loaner" source="x_usefc_equipment">e80179c3db186300dc74ca7e3b9619f8</sys_package>
@@ -46,7 +48,7 @@
         <sys_scope display_value="Equipment Loaner">e80179c3db186300dc74ca7e3b9619f8</sys_scope>
         <sys_update_name>sys_script_client_05cd5601db382f00f19c5eea4b9619d9</sys_update_name>
         <sys_updated_by>pcastillo</sys_updated_by>
-        <sys_updated_on>2018-09-25 15:37:15</sys_updated_on>
+        <sys_updated_on>2018-11-15 17:20:07</sys_updated_on>
         <table>x_usefc_equipment_equipment_register</table>
         <type>onLoad</type>
         <ui_type>0</ui_type>
