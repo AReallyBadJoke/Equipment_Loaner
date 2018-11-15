@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element audit="true" extends="task" label="Equipment Register" max_length="40" name="x_usefc_equipment_equipment_register" type="collection">
+        <element label="Actual Return Date" max_length="40" name="actual_return_date" read_only="true" type="glide_date_time"/>
+        <element label="Cancelled" max_length="40" name="cancelled" type="glide_date_time"/>
+        <element label="Cancelled By" max_length="32" name="cancelled_by" reference="sys_user" type="reference"/>
+        <element label="Check Out" max_length="40" name="check_out" type="glide_date_time"/>
+        <element label="Group" max_length="32" name="group" reference="cmn_department" type="reference"/>
+        <element label="Item" max_length="32" name="item" read_only="true" reference="x_usefc_equipment_equipment_item" type="reference"/>
+        <element label="Item Late" max_length="40" name="item_late" type="boolean"/>
+        <element label="Requested" max_length="40" name="requested" type="glide_date_time"/>
+        <element label="Requested For" max_length="32" name="requested_for" reference="sys_user" type="reference"/>
+        <index name="index">
+            <element name="item"/>
+        </index>
+        <index name="index2">
+            <element name="cancelled_by"/>
+        </index>
+        <index name="index3">
+            <element name="requested_for"/>
+        </index>
+        <index name="index4">
+            <element name="group"/>
+        </index>
+    </element>
+</database>

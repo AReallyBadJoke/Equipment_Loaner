@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_usefc_equipment.HardwareLoanerScriptDriver</api_name>
+        <client_callable>true</client_callable>
+        <description>This will be the driver class for getting data to and from my catalog Item.&#13;
+</description>
+        <name>HardwareLoanerScriptDriver</name>
+        <script><![CDATA[var HardwareLoanerScriptDriver = Class.create();
+HardwareLoanerScriptDriver.prototype = Object.extendsObject(global.AbstractAjaxProcessor, {
+	getDepartment: function(){
+		var groupArray;
+		var gr = new GlideRecord("cmn_department");
+		gr.addActiveQuery();
+		gr.addQuery('name','Information Systems/Tech');
+		gr.query();
+		while(gr.next()){
+			groupArray += gr.name +",";
+		}
+		return groupArray;
+		
+	},
+	getCategory: function(){
+		var gr = new GlideRecord("x_usefc_equipment_equipment_register");
+		var departmentChoice = this.getParameter("sysparm_department_choice");
+		var itemList = this.getParameter("sysparm_item_lists");
+		
+		var listOfItems=[];
+		listOfItems = itemList.split(',');
+		var itemID = "";
+		//var tossed = "";
+		//Converting our selected date into a useable date.
+		var check_out =this.getParameter('sysparm_date_choice');
+		var return_Date = this.getParameter('sysparm_date_return');
+		
+		//Adding a day to make sure that their is at least one day buffer.
+		var check_out_gdt = new GlideDateTime(check_out);
+		var return_gdt = new GlideDateTime(return_Date);
+		
+		var dayOfWeek = check_out_gdt.getDayOfWeekUTC();
+		var returnDayOfWeek = return_gdt.getDayOfWeekUTC();
+		//return localDayOfWeek;
+		
+		if(dayOfWeek == 6 || dayOfWeek == 7){
+			return "weekend_checkout";
+		}
+		else if(returnDayOfWeek == 6 || returnDayOfWeek == 7){
+			return "weekend_return";
+		}
+		else{
+			for(var i=0; i < listOfItems.length; ++i){
+				gr.addActiveQuery();
+				gr.addQuery('group.name', departmentChoice);
+				gr.query();
+				while(gr.next()){
+					var gr_due = new GlideDateTime(gr.due_date);
+					var gr_out = new GlideDateTime(gr.check_out);
+					
+					if((return_gdt.before(gr_out) || return_gdt.after(gr_due)) && (check_out_gdt.before(gr_out) || check_out_gdt.after(gr_due))){
+						if(gr_out.after(check_out_gdt) && gr_due.before(return_gdt)){
+							if(gr.item == listOfItems[i]){
+								listOfItems[i] ="";
+							}
+						}
+					}
+					else{
+						//tossed += gr.item +",";
+						if(gr.item == listOfItems[i]){
+							listOfItems[i] ="";
+						}
+					}
+				}
+				
+			}
+			for(i=0; i<listOfItems.length; ++i){
+				if(listOfItems[i]!=""){
+					itemID += listOfItems[i] +",";
+				}
+			}
+			if(itemID != ""){
+				return itemID;
+			}
+			else{ return null;}
+			}
+			
+		},
+		getItems: function(){
+			var gr = new GlideRecord("x_usefc_equipment_equipment_item");
+			var items="";
+			var categoryChoice = this.getParameter('sysparm_category_choice');
+			
+			//Converting our selected date into a useable date.
+			//Adding a day to make sure that their is at least one day buffer.
+			
+			gr.addQuery('catagory', categoryChoice);
+			gr.query();
+			while(gr.next()){
+				items +=gr.sys_id +" - " +  gr.name +",";
+			}
+			if(items !=""){
+				return items;
+			}
+			else{
+				return null;
+			}
+		},
+		getTaskCount: function(){
+			var gr = new GlideRecord("x_usefc_equipment_equipment_loaner_task");
+			var recordNumber = this.getParameter('sysparm_record');
+			var items ="";
+			//gr.addActiveQuery();
+			gr.addQuery("equipment_register.number", recordNumber);
+			gr.query();
+			while(gr.next()){
+				items += gr.number + ",";
+			}
+			return items;
+			/*
+			if(items > 1){
+				return "yes";
+			}
+			else{
+				return "no";
+			}
+ 			*/
+		},
+		noRequestItems: function(){
+			//need to grab the items that do not have a loaner record associated with them.
+			//var itemID = this.getParameter('sysparm_item_list');
+			var departmentChoice = this.getParameter('sysparm_department');
+			var newItems = "";
+			
+			var noRecordItem = new GlideRecord("x_usefc_equipment_equipment_item");
+			noRecordItem.addQuery("available","true");
+			noRecordItem.addQuery('group.name', departmentChoice);
+			
+			noRecordItem.query();
+			while(noRecordItem.next()){
+				newItems += noRecordItem.sys_id +",";
+			}
+			return newItems;
+			//return (itemID + newItems);
+		},
+		shortQuery: function(){
+			
+			var listItem = this.getParameter('sysparm_item');
+			var category="";
+			var splitAnswer;
+			splitAnswer =[];
+			splitAnswer = listItem.split(',');
+			
+			for(var i = 0; i<splitAnswer.length; ++i){
+				if(splitAnswer[i] != null){
+					var eItem = new GlideRecord('x_usefc_equipment_equipment_item');
+					//eItem.addActiveQuery();
+					eItem.addQuery("sys_id", splitAnswer[i]);
+					//eItem.addQuery('group.name', departmentChoice);
+					eItem.query();
+					
+					while(eItem.next()){
+						category += eItem.catagory +"-"+eItem.sys_id+"+"+ eItem.name +",";
+						//category += eItem.catagory +"-"+ eItem.name +",";
+					}
+				}
+			}
+			if(category !=""){
+				return category;
+			}
+			else{
+				return null;
+			}
+		},
+		dateValidation: function(){
+			var inHold = this.getParameter('sysparm_in');
+			var outHold = this.getParameter('sysparm_out');
+			var outDate = new GlideDateTime(outHold);
+			var inDate = new GlideDateTime(inHold);
+			
+			if(inDate.after(outDate)){
+				return true;
+			}
+			else{
+				return false;
+			}
+			
+			
+		},
+		checkTask: function() {
+			var request_sysID = "";
+			var taskCheck = false;
+			var requestNumber = this.getParameter('sysparm_elr_number');
+			
+			var gr = new GlideRecord('x_usefc_equipment_equipment_register');
+			gr.addQuery('number', requestNumber);
+			gr.query();
+			while(gr.next()){
+				request_sysID = gr.sys_id;
+			}
+			return request_sysID;
+		},
+		checkTaskTwo: function(){
+			var request_sysID = this.getParameter('sysparm_elr_id');
+
+			//Checking for any active tasks related to Request Item.
+			var taskGr = new GlideRecord('x_usefc_equipment_equipment_loaner_task');
+			taskGr.addActiveQuery();
+			taskGr.addQuery('equipment_register', request_sysID);
+			taskGr.query();
+			
+			while(taskGr.next()){
+				if(taskGr.active == true){
+					return true;
+				}
+			}
+			return false;
+		},
+		type: 'HardwareLoanerScriptDriver'
+	});
+	
+	
+	
+	/* saving code just in case. */
+	//var myJsonString= Object.toJSON(groupArray);
+	//var myJsonString = JSON.stringify(groupArray);
+	//return myJsonString;]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>pcastillo</sys_created_by>
+        <sys_created_on>2018-09-18 13:34:27</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>e3ecb9badb242b00f19c5eea4b961978</sys_id>
+        <sys_mod_count>324</sys_mod_count>
+        <sys_name>HardwareLoanerScriptDriver</sys_name>
+        <sys_package display_value="Equipment Loaner" source="x_usefc_equipment">e80179c3db186300dc74ca7e3b9619f8</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Equipment Loaner">e80179c3db186300dc74ca7e3b9619f8</sys_scope>
+        <sys_update_name>sys_script_include_e3ecb9badb242b00f19c5eea4b961978</sys_update_name>
+        <sys_updated_by>pcastillo</sys_updated_by>
+        <sys_updated_on>2018-11-06 18:17:33</sys_updated_on>
+    </sys_script_include>
+</record_update>

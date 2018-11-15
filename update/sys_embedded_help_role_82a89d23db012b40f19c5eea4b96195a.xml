@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_embedded_help_role">
+    <sys_embedded_help_role action="INSERT_OR_UPDATE">
+        <order>10</order>
+        <role display_value="actsub_admin" name="actsub_admin">36903208db103200fa9b32d8f0b8f54c</role>
+        <sys_class_name>sys_embedded_help_role</sys_class_name>
+        <sys_created_by>system</sys_created_by>
+        <sys_created_on>2018-10-15 15:05:01</sys_created_on>
+        <sys_customer_update>false</sys_customer_update>
+        <sys_id>82a89d23db012b40f19c5eea4b96195a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>36903208db103200fa9b32d8f0b8f54c</sys_name>
+        <sys_package display_value="Equipment Loaner" source="x_usefc_equipment">e80179c3db186300dc74ca7e3b9619f8</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Equipment Loaner">e80179c3db186300dc74ca7e3b9619f8</sys_scope>
+        <sys_update_name>sys_embedded_help_role_82a89d23db012b40f19c5eea4b96195a</sys_update_name>
+        <sys_updated_by>system</sys_updated_by>
+        <sys_updated_on>2018-10-15 15:05:01</sys_updated_on>
+    </sys_embedded_help_role>
+</record_update>
