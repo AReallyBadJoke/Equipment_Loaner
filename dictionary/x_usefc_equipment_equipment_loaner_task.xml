@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<database>
-    <element audit="true" extends="task" label="Equipment Loaner  Task" max_length="40" name="x_usefc_equipment_equipment_loaner_task" type="collection">
-        <element label="Equipment Register" max_length="32" name="equipment_register" read_only="true" reference="x_usefc_equipment_equipment_register" type="reference"/>
-        <index name="index">
-            <element name="equipment_register"/>
-        </index>
-    </element>
-</database>
